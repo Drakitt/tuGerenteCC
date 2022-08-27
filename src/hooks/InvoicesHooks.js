@@ -8,7 +8,7 @@ async function getAll() {
         const docRef = collection(db, "Invoice");
         let lastKey = "";
         
-        const q = query(docRef, orderBy('id'), limit(20));
+        const q = query(docRef, orderBy('id'));
         const querySnapshot = await getDocs(q);
             return querySnapshot.docs.map(doc => {
             lastKey = doc.data().id;

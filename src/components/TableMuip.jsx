@@ -19,6 +19,8 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import TableHead from '@mui/material/TableHead';
 import AppContext from '../context/AppContext';
 
+import InfiniteScroll from "react-infinite-scroll-component";
+
 function TablePaginationActions(props) {
   const theme = useTheme();
   const { count, page, rowsPerPage, onPageChange } = props;
@@ -117,8 +119,9 @@ export default function CustomPaginationActionsTable() {
   };
 
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
+    <>
+    <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
+      <Table stickyHeader sx={{ minWidth: 500 }} aria-label="custom pagination table">
       <TableHead>
           <TableRow>
             <TableCell>Nombre</TableCell>
@@ -131,10 +134,6 @@ export default function CustomPaginationActionsTable() {
         
         <TableBody>
         { filtro != null ?
-          (rowsPerPage > 0
-            ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : data
-          ).map((row) => (
           <TableRow
             onClick={()=>handleClick(filtro.id)}
             key={filtro.id}
@@ -147,9 +146,12 @@ export default function CustomPaginationActionsTable() {
             <TableCell align="left">{filtro.nit}</TableCell>
             <TableCell align="left">{filtro.razonSocial}</TableCell>
             <TableCell align="left">{filtro.telefono}</TableCell>
-          </TableRow>))
+          </TableRow>
         :
-        data.map((row, key) => (
+        (rowsPerPage > 0
+          ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+          : data
+        ).map((row, key) => (
           <TableRow
             onClick={()=>handleClick(row.id)}
             key={key}
@@ -165,45 +167,30 @@ export default function CustomPaginationActionsTable() {
           </TableRow>
         ))
         }
-          {(rowsPerPage > 0
-            ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : data
-          ).map((row) => (
-            
-            <TableRow key={row.name}>
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.calories}
-              </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                {row.fat}
-              </TableCell>
+           {emptyRows > 0 && (
+            <TableRow style={{ height: 53 * emptyRows }}>
+              <TableCell colSpan={6} />
             </TableRow>
-          ))}
+          )}
         </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={3}
-              count={data.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              SelectProps={{
-                inputProps: {
-                  'aria-label': 'rows per page',
-                },
-                native: true,
-              }}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
       </Table>
     </TableContainer>
+    <TablePagination
+    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+    colSpan={3}
+    count={data.length}
+    rowsPerPage={rowsPerPage}
+    page={page}
+    SelectProps={{
+      inputProps: {
+        'aria-label': 'rows per page',
+      },
+      native: true,
+    }}
+    onPageChange={handleChangePage}
+    onRowsPerPageChange={handleChangeRowsPerPage}
+    ActionsComponent={TablePaginationActions}
+  />
+  </>
   );
 }
